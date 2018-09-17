@@ -15,49 +15,50 @@ points = [(568.2,200.2),
 		  (429.8,483.2), 
 		  (415.3,301.1)]
 
-sides = []
-
-
 import random
 
 def get_sides(points):
+	sides = []
 	for i in range(len(points)):
-		if i != len(points):
+		if i != len(points) - 1:
 			point1 = points[i]
 			point2 = points[i + 1]
 		else:
 			point1 = points[i]
 			point2 = points[0]
-
-		m = (point1[1] - point2[1]) / (point1[0] - point2[0])
+		if point1[0] != point2[0]:
+			m = (point1[1] - point2[1]) / (point1[0] - point2[0])
+		else:
+			m = 1000000000
 		c = point1[1] - m * point1[0]
 
 		sides.append({'m': m, "c": c, 1: point1, 2: point2})
+	return sides
 
 def are_intersecting(side, ray):
-	if side[0] == ray[0]:
+	if side['m'] == ray['m']:
 		return False
 	x = (ray['c'] - side['c']) / (side['m'] - ray['m'])
 	y = side['m'] * x + side['c']
 
 	if is_on_side(x, y, side):
 		return True
-	else
+	else:
 		return False
 
 def is_on_side(x, y, side):
 	if side[1][0] < side[2][0]:
-		if x not in range(side[1], side[2]):
+		if x not in range(int(side[1][0]), int(side[2][0])):
 			return False
-	else
-		if x not in range(side[2], side[2]):
+	else:
+		if x not in range(int(side[2][0]), int(side[2][0])):
 			return False
 
 	if side[1][1] < side[2][1]:
-		if y not in range(side[1], side[2]):
+		if y not in range(int(side[1][1]), int(side[2][1])):
 			return False
-	else
-		if y not in range(side[2], side[2]):
+	else:
+		if y not in range(int(side[2][1]), int(side[2][1])):
 			return False
 
 def get_ray(x, y):
@@ -67,8 +68,25 @@ def get_ray(x, y):
 x = random.randint(0, 800)
 y = random.randint(0, 600)
 
-def check_in_shape(x, y, points):
-	
+def get_point_in_shape(points):
+	sides = get_sides(points)
+	found = False
+	while not found:
+		x = random.randint(0, 800)
+		y = random.randint(0, 600)
+		ray = get_ray(x, y)
+		intersections = 0
+		for side in sides:
+			if are_intersecting(side, ray):
+				intersections += 1
+		if intersections % 2 == 1:
+			found = True
+		else:
+			found = False
+
+print(get_point_in_shape(points))
+
+
 
 
 
